@@ -3,7 +3,7 @@ images = {}
 prefix = Rails.application.config.assets.prefix
 should_compute_assets_path = Rails.env.production? || Rails.env.staging? # for performance
 if should_compute_assets_path
-  images_path = Rails.root.join('app/assets/images/')
+  images_path = Rails.root.join("app/#{prefix}/images/")
   images_dir = images_path.to_s
   images_enumerator = defined?(assets) ? assets.each_file : Dir["#{images_dir}**/*.*"]
   images_enumerator.each do |file_path|
