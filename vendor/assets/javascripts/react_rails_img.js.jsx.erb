@@ -3,7 +3,7 @@ images = {}
 prefix = Rails.application.config.assets.prefix
 should_compute_assets_path = Rails.env.production? || Rails.env.staging? # for performance
 if should_compute_assets_path
-  images_path = Rails.root.join("app/#{prefix}/images/")
+  images_path = Rails.root.join("app/web-assets/images/")
   images_dir = images_path.to_s
   images_enumerator = defined?(assets) ? assets.each_file : Dir["#{images_dir}**/*.*"]
   images_enumerator.each do |file_path|
@@ -15,15 +15,15 @@ if should_compute_assets_path
   end
 end
 %>
-// usage: <Img className="tip" src="/assets/ui-tip.png" alt="private event tip" />
-// using cssSprite: <Img src="/assets/css_sprite/where-b.png" /> =>
-//   <img class="where-b" data-reactid=".0.1.$0.3.0.1.0">, where-b.png should be placed in `assets/images/css_sprite`
+// usage: <Img className="tip" src="/web-assets/ui-tip.png" alt="private event tip" />
+// using cssSprite: <Img src="/web-assets/css_sprite/where-b.png" /> =>
+//   <img class="where-b" data-reactid=".0.1.$0.3.0.1.0">, where-b.png should be placed in `web-assets/images/css_sprite`
 var Img = React.createClass({
   statics: {
-    // usage: Img.assetPath('logo.png') => "/assets/logo.png"
+    // usage: Img.assetPath('logo.png') => "/web-assets/logo.png"
     assetPath: function (path) {
       var paths = <%= images.to_json %>;
-      return paths[path] || "/assets/"+path;
+      return paths[path] || "/web-assets/"+path;
     }
   },
 
@@ -33,8 +33,8 @@ var Img = React.createClass({
 
   src: function(){
     var src = this.props.src;
-    if(src.match("/assets/")){
-      src = src.replace("/assets/", '');
+    if(src.match("/web-assets/")){
+      src = src.replace("/web-assets/", '');
     }
     src = Img.assetPath(src);
     return src;
@@ -45,8 +45,8 @@ var Img = React.createClass({
   },
 
   useCssSprite: function (src, className) {
-    // "/assets/ui-right-w.png" => "ui-right-w"
-    var baseName = src.replace(/\/assets\/(.*)\..*$/, '$1');
+    // "/web-assets/ui-right-w.png" => "ui-right-w"
+    var baseName = src.replace(/\/web-assets\/(.*)\..*$/, '$1');
     var cssSpriteClassName = baseName.replace(/css_sprite\//, '');
     if(className){
       className = cssSpriteClassName + " "+className;
@@ -63,7 +63,7 @@ var Img = React.createClass({
     var src = this.src();
     // using css_sprite
     if(this.isUsingCssSprite(src)){
-      // src should be url like "/assets/css_sprite/xxx.png"
+      // src should be url like "/web-assets/css_sprite/xxx.png"
       var result = this.useCssSprite(this.props.src, className);
       src = result.src;
       className = result.className;
@@ -79,11 +79,11 @@ var Img = React.createClass({
 
 // similar to rails helper `image_tag`, e.g.: {imageTag('placeholder/active-01.png')}
 // the function will return for development:
-// /assets/placeholder/active-01.png
+// /web-assets/placeholder/active-01.png
 // and for production
-// /assets/placeholder/active-01-be1f67ffd42a4c1a41bdcc547c5705a3423a2f24bfe930f00398077fe518e6c0.png
+// /web-assets/placeholder/active-01-be1f67ffd42a4c1a41bdcc547c5705a3423a2f24bfe930f00398077fe518e6c0.png
 function imageTag (source, options) {
   if(!options)options = {};
-  var src = "/assets/"+source;
+  var src = "/web-assets/"+source;
   return <Img {...options} src={src} />;
 }
